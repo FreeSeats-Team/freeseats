@@ -1,0 +1,31 @@
+{
+  "title": "chair_update",
+  "description": "JSON schema for chair data (chair to data hub).",
+  "type": "object",
+
+  "properties": {
+    "workspace_id": {
+      "description": "The unique identifier for a workspace",
+      "type": "number",
+      "minimum": 0
+    },
+
+    "chair_id": {
+      "description": "The unique identifier for a chair in the workspace",
+      "type": "number",
+      "minimum": 0
+    },
+
+    "old": {
+      "description": "Old state of the chair (occupied or not)",
+      "type": "boolean"
+    },
+
+    "new": {
+      "description": "New state of the chair (occupied or not)",
+      "type": "boolean"
+    }
+  },
+
+  "required": ["workspace_id", "chair_id", "old", "new"]
+}

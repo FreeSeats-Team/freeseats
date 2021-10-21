@@ -1,0 +1,8 @@
+# Data Hub ignores
+*/__pycache__/
+*/.pytest_cache/
+*/bin/
+*/include/
+*/lib/
+*.pyc
+pyvenv.cfg

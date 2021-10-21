@@ -1,0 +1,35 @@
+{
+  "title": "workspace",
+  "description": "JSON schema for workspace data (data hub to backend).",
+  "type": "object",
+
+  "properties": {
+    "workspace_id": {
+      "description": "The unique identifier for a workspace",
+      "type": "number",
+      "minimum": 0
+    },
+
+    "state": {
+      "description": "Full workspace state, including all chairs",
+      "type": "array",
+      "items": {
+        "title": "chair_state",
+        "description": "Status of a single chair (the state, not the delta).",
+        "type": "object",
+        "properties": {
+          "chair_id": {
+            "type": "number",
+            "minimum": 0
+          },
+          "occupied": {
+            "type": "boolean"
+          }
+        },
+        "required": ["chair_id", "occupied"]
+      }
+    }
+  },
+
+  "required": ["workspace_id", "state"]
+}
