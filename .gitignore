@@ -6,3 +6,4 @@
 */lib/
 *.pyc
 pyvenv.cfg
+.DS_Store
