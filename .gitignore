@@ -7,3 +7,4 @@
 *.pyc
 pyvenv.cfg
 .DS_Store
+web_app/node_modules/*
