@@ -7,11 +7,11 @@ Primarily used by the Data Hub (RPi) to check data I/O.
 import json
 from jsonschema import validate
 
-chair_f = open('../models/chair.schema')
+chair_f = open('../models/chair.json')
 chair_schema = json.load(chair_f)
 chair_f.close()
 
-workspace_f = open('../models/workspace.schema')
+workspace_f = open('../models/workspace.json')
 workspace_schema = json.load(workspace_f)
 workspace_f.close()
 

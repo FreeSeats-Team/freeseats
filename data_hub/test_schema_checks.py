@@ -5,20 +5,20 @@ from schema_checks import validate_chair_data, validate_workspace_data
 
 def test_validate_chair_data():
     good_instance = {
-        'workspace_id': 1,
-        'chair_id': 18500,
+        'workspace_id': '1',
+        'seat': '18500',
         'old': True,
         'new': False
     }
     bad_id = {
-        'workspace_id': 1,
-        'chair_id': '18500',
+        'workspace_id': '1',
+        'seat': 18500,
         'old': True,
         'new': False
     }
     bad_delta = {
-        'workspace_id': 1,
-        'chair_id': '18500',
+        'workspace_id': '1',
+        'seat': '18500',
         'old': 1,
         'new': 0
     }
@@ -36,39 +36,39 @@ def test_validate_chair_data():
 
 def test_validate_workspace_data():
     good_instance = {
-        'workspace_id': 1,
-        'state': [
+        'workspace_id': '1',
+        'seats': [
             {
-                'chair_id': 18500,
+                'seat': '18500',
                 'occupied': False
             },
             {
-                'chair_id': 18501,
+                'seat': '18501',
                 'occupied': True
             },
         ]
     }
     bad_id = {
-        'workspace_id': '1',
-        'state': [
+        'workspace_id': 1,
+        'seats': [
             {
-                'chair_id': 18500,
+                'seat': '18500',
                 'occupied': False
             },
             {
-                'chair_id': 18501,
+                'seats': '18501',
                 'occupied': True
             },
         ]
     }
     bad_state = {
-        'workspace_id': 1,
-        'state': [
+        'workspace_id': '1',
+        'seats': [
             {
-                'chair_id': 18500,
+                'seat': '18500',
             },
             {
-                'chair_id': 18501,
+                'seat': '18501',
                 'occupied': True
             },
         ]

@@ -6,13 +6,13 @@
   "properties": {
     "workspace_id": {
       "description": "The unique identifier for a workspace",
-      "type": "number",
+      "type": "string",
       "minimum": 0
     },
 
-    "chair_id": {
+    "seat": {
       "description": "The unique identifier for a chair in the workspace",
-      "type": "number",
+      "type": "string",
       "minimum": 0
     },
 
@@ -27,5 +27,5 @@
     }
   },
 
-  "required": ["workspace_id", "chair_id", "old", "new"]
+  "required": ["workspace_id", "seat", "old", "new"]
 }
