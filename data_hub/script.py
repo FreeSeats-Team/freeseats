@@ -5,10 +5,9 @@ Reads data from GPIO pins, updates workspace state, and pushes data.
 This should be running indefinitely on the RPi.
 '''
 
-# imports
+# imports -------------------------------------------------
 
 # communications
-# TODO: Uncomment for RPi
 # import RPI.GPIO as GPIO
 import requests
 
@@ -18,7 +17,7 @@ import time
 import schema_checks
 
 
-# helpers + utils
+# helpers + utils -------------------------------------------------
 
 def get_serial_number():
     '''
@@ -57,12 +56,32 @@ def get_time():
     return int(time.time())
 
 
+def format_state(state):
+    '''
+    Formats locally-saved state for POST request update.
+    '''
+    seats = []
+    for seat in state['seats'].keys():
+        formatted_seat = {
+            'seat': seat,
+            'occupied': state['seats'][seat]
+        }
+        seats.append(formatted_seat)
+    payload = {
+        'workspace_id': state['workspace_id'],
+        'seats': seats
+    }
+    schema_checks.validate_workspace_data(payload)
+    return payload
+
+
 def send_state(state, url):
     '''
     Sends the current chair state to the backend endpoint.
+    The format should be in accordance with the workspace schema json.
     '''
-    # TODO: convert state to json schema structure
-    res = requests.post(url, data=state)
+    payload = format_state(state)
+    res = requests.post(url, data=payload)
     if res.status_code() == 400:
         print(res)
         raise Exception("send_state failed to push to", url)
@@ -101,13 +120,14 @@ def update_state(state, data, my_id):
     return new_state
 
 
-# globals
+# globals -------------------------------------------------
+
 ERROR_STR = "ERROR00000000000"
 POLLING_INTERVAL = 0.1  # number of seconds between GPIO polls
 UPDATE_INTERVAL = 15    # number of seconds between backend updates
 
-# main script loop
 
+# main script loop -------------------------------------------------
 
 def main():
     serial_res = get_serial_number()
@@ -143,5 +163,7 @@ def main():
             continue
         update_state(state, data, WORKSPACE_ID)
 
+
+# execute -------------------------------------------------
 
 main()

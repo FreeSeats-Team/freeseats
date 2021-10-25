@@ -31,3 +31,6 @@ def test_script():
     validate_chair_data(chair_data)
     actual_state = script.update_state(start_state, chair_data, TEST_ID)
     assert(new_state == actual_state)
+
+    # Verify state formatting
+    script.format_state(new_state)
