@@ -2,14 +2,17 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const Seat = new Schema({
-        id: String,
+        _id: String,
         occupied: Boolean,
     }
 )
 
 const Hub = new Schema({
-        id: String,
-        seats: [Seat],
+        _id: String,
+        seats: {
+            type: Map, 
+            of: Seat
+        }
     }
 )
 

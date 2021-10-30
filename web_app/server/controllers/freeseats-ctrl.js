@@ -1,9 +1,12 @@
-const Chair = require('../models/freeseats-model')
+const Seat = require('../models/freeseats-model')
 const Hub = require('../models/freeseats-model')
 
+/* 
+ * create_hub will add a new hub to the cloud database
+ */
 create_hub = (req, res) => {
     const body = req.body
-
+    console.log(typeof body)
     if (!body) {
         return res.status(400).json({
             success: false,
@@ -12,7 +15,6 @@ create_hub = (req, res) => {
     }
 
     const hub = new Hub(body)
-
     if (!hub) {
         return res.status(400).json({ success: false, error: err })
     }
@@ -34,11 +36,65 @@ create_hub = (req, res) => {
         })
 }
 
-// TODO: createSeat
-// TODO: deleteSeat
-// TODO: deleteHub
+/*
+ * create_seats will add a new seats to an existing hub
+ * Given:
+ * hub_id, array 'seats' of seats following Seats schema
+ * function will add each seat to cloud database
+*/
+create_seats = (req, res) => {
+    const body = req.body
+    
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide request body',
+        })
+    }
 
-update_seat = async (req, res) => {
+    hub_id = body.hub_id
+    new_seats = body.seats
+
+    Hub.findOne({ _id: hub_id }, (err, hub) => {
+        if (err || hub == null) {
+            return res.status(404).json({
+                err,
+                message: 'Hub_id ' + hub_id + ' not found!',
+            })
+        }
+
+        for (var i = 0; i < new_seats.length; i++) {
+            console.log(typeof new_seats[i])
+            // seat = new Seat(new_seats[i])
+            // For some reason this does not include the occupied field
+            seat = new_seats[i]
+            hub.seats.set(seat._id, seat)
+        }
+
+        hub
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    message: 'Seats created!',
+                })
+            })
+            .catch(error => {
+                return res.status(404).json({
+                    error,
+                    message: 'Seats not created!',
+                })
+            })
+    })
+}
+
+/*
+ * update_seats updates the status of a list of seats
+ * Given:
+ * hub_id, array 'seat_updates' of fields: seat_id, seat_status 
+ * function will update each seat_id within hub_id's status to respective seat_status
+*/
+update_seats = async (req, res) => {
     const body = req.body
 
     if (!body) {
@@ -48,41 +104,163 @@ update_seat = async (req, res) => {
         })
     }
 
-    Hub.findOne({ _id: req.params.id }, (err, movie) => {
-        if (err) {
+    hub_id = body.hub_id
+    seat_updates = body.seat_updates
+    new_status = body.seat_status
+
+    Hub.findOne({ _id: hub_id }, (err, hub) => {
+        if (err || hub == null) {
             return res.status(404).json({
                 err,
-                message: 'Hub not valid!',
+                message: 'Hub_id ' + hub_id + ' not found!',
             })
         }
 
-        return res.status(200).json({
-            success: true,
-            id: Hub._id,
-            message: 'Update is in progress.',
-        })
+        for (var i = 0; i < seat_updates.length; i++) {
+            upd = seat_updates[i]
+            if (!hub.seats.has(upd.seat_id)) {
+                return (res.status(404).json({
+                    err,
+                    message: 'Seat_id ' + upd.seat_id + ' not found!',
+                }))
+            }
+            seat = hub.seats.get(upd.seat_id)
+            seat.occupied = upd.seat_status
+            hub.seats.set(upd.seat_id, seat)
+        }
+
+        hub
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    message: 'Seats updated!',
+                })
+            })
+            .catch(error => {
+                return res.status(404).json({
+                    error,
+                    message: 'Seats not updated!',
+                })
+            })
     })
 }
 
-// TODO: getFreeSeats
-/*
-getFreeSeats = async (req, res) => {
-    await Hub.find({}, (err, movies) => {
-        if (err) {
-            return res.status(400).json({ success: false, error: err })
+/* 
+ * Given a json request following the Hub schema, create_hub will add a new hub to cloud database
+ */
+delete_hub = (req, res) => {
+    const body = req.body
+    console.log(typeof body)
+    if (!body || !body.hub_id) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide hub_id in body',
+        })
+    }
+
+    Hub.remove({ _id: body.hub_id }, function(error) {
+        if (!error) {
+            return res.status(200).json({
+                success: true,
+                message: 'Hub deleted!',
+            })
         }
-        if (!movies.length) {
-            return res
-                .status(404)
-                .json({ success: false, error: `Movie not found` })
+        else {
+            return res.status(404).json({
+                error,
+                message: 'Hub not deleted!',
+            })
         }
-        return res.status(200).json({ success: true, data: movies })
-    }).catch(err => console.log(err))
+    });
 }
+
+/*
+ * delete_seats will add a new seats to an existing hub
+ * Given:
+ * hub_id, array 'seats' of seat_id's
+ * function will remove each seat to cloud database
 */
+delete_seats = (req, res) => {
+    const body = req.body
+    
+    if (!body) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide request body',
+        })
+    }
+
+    hub_id = body.hub_id
+    seat_ids = body.seat_ids
+
+    Hub.findOne({ _id: hub_id }, (err, hub) => {
+        if (err || hub == null) {
+            return res.status(404).json({
+                err,
+                message: 'Hub_id ' + hub_id + ' not found!',
+            })
+        }
+
+        for (var i = 0; i < seat_ids.length; i++) {
+            seat_id = seat_ids[i]
+            hub.seats.delete(seat_id)
+        }
+
+        hub
+            .save()
+            .then(() => {
+                return res.status(200).json({
+                    success: true,
+                    message: 'Seats deleted!',
+                })
+            })
+            .catch(error => {
+                return res.status(404).json({
+                    error,
+                    message: 'Seats not deleted!',
+                })
+            })
+    })
+}
+
+/*
+ * getFreeSeats will return an array of the freeseats given a hub_id as a request query parameter
+ *
+ */
+get_free_seats = async (req, res) => {
+    if (!req || !req.query || !req.query.hub_id) {
+        return res.status(400).json({
+            success: false,
+            error: 'You must provide a hub_id to update',
+        })
+    }
+
+    hub_id = req.query.hub_id
+
+    Hub.findOne({ _id: hub_id }, (err, hub) => {
+        if (err || hub == null) {
+            return res.status(404).json({
+                err,
+                message: 'Hub_id ' + hub_id + ' not found!',
+            })
+        }
+        available_seats = new Map(
+            [...hub.seats].filter(([_, seat]) => seat.occupied == false )
+          );
+        obj = Object.fromEntries(available_seats);
+        return res
+            .status(200)
+            .json({ success: true, data: obj })
+    })
+}
 
 module.exports = {
     create_hub,
-    update_seat,
+    create_seats,
+    update_seats,
+    delete_hub,
+    delete_seats,
+    get_free_seats,
 }
 
