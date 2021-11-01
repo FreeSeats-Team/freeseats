@@ -6,30 +6,30 @@
   "properties": {
     "workspace_id": {
       "description": "The unique identifier for a workspace",
-      "type": "number",
+      "type": "string",
       "minimum": 0
     },
 
-    "state": {
+    "seats": {
       "description": "Full workspace state, including all chairs",
       "type": "array",
       "items": {
-        "title": "chair_state",
+        "title": "seat",
         "description": "Status of a single chair (the state, not the delta).",
         "type": "object",
         "properties": {
-          "chair_id": {
-            "type": "number",
+          "seat": {
+            "type": "string",
             "minimum": 0
           },
           "occupied": {
             "type": "boolean"
           }
         },
-        "required": ["chair_id", "occupied"]
+        "required": ["seat", "occupied"]
       }
     }
   },
 
-  "required": ["workspace_id", "state"]
+  "required": ["workspace_id", "seats"]
 }
