@@ -22,3 +22,5 @@ app.get('/', (req, res) => {
 app.use('/api', freeseats_router)
 
 app.listen(api_port, () => console.log(`Server running on port ${api_port}`))
+
+console.log("index.js working!")

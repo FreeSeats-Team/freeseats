@@ -18,5 +18,7 @@ mongoose
     })
 */
 
+
+console.log("Connected!")
 const db = mongoose.connection
 module.exports = db
