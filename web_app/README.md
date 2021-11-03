@@ -38,4 +38,4 @@ $ yarn start
 | `api/freeseats/get_free_seats` | `GET` | Query param: `hub_id`: hub_id  | `status`: Status, `data`: Array of all seats which has occupied value of false | getFreeSeats will return an array of the free seats given a hub_id as a request query parameter |
 
 ### API Use Examples (Import in Postman) 
-[postman_link]()
+[postman_link](https://github.com/FreeSeats-Team/freeseats/tree/web-deploy/web_app/server/postman_examples)
