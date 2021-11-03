@@ -1,1 +1,1 @@
-worker: yarn install && npx nodemon index.js
+web: yarn install && npx nodemon index.js
