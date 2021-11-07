@@ -11,6 +11,7 @@ function App() {
         <Router>
             <NavBar />
             <Switch>
+                <Route path="/" exact component={FreeSeatsList} />
                 <Route path="/freeseats/list" exact component={FreeSeatsList} />
             </Switch>
         </Router>
