@@ -224,10 +224,10 @@ delete_seats = (req, res) => {
 }
 
 /*
- * getFreeSeats will return an array of the free seats given a hub_id as a request query parameter
+ * get_free_seats_by_hub will return an array of the free seats given a hub_id as a request query parameter
  *
  */
-get_free_seats = async (req, res) => {
+get_free_seats_by_hub = async (req, res) => {
     if (!req || !req.query || !req.query.hub_id) {
         return res.status(400).json({
             success: false,
@@ -254,12 +254,38 @@ get_free_seats = async (req, res) => {
     })
 }
 
+/*
+ * get_all_free_seats will return an array of the free seats given a hub_id as a request query parameter
+ *
+ */
+get_all_free_seats = async (req, res) => {
+    Hub.find({ }, (err, data) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Error.',
+            })
+        }
+        for (var i = 0; i < data.length; i++) {
+            available_seats = new Map(
+                [...data[i].seats].filter(([_, seat]) => seat.occupied == false )
+              );
+            obj = Object.fromEntries(available_seats);
+            data[i].seats = obj
+        }
+        return res
+            .status(200)
+            .json({ success: true, data: data })
+    })
+}
+
 module.exports = {
     create_hub,
     create_seats,
     update_seats,
     delete_hub,
     delete_seats,
-    get_free_seats,
+    get_free_seats_by_hub,
+    get_all_free_seats,
 }
 
