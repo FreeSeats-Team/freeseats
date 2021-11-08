@@ -8,13 +8,33 @@ This should be running indefinitely on the RPi.
 # imports -------------------------------------------------
 
 # communications
-# import RPI.GPIO as GPIO
+import RPi.GPIO as GPIO
+import serial
 import requests
 
 # data parsing
 import json
 import time
 import schema_checks
+
+
+# globals -------------------------------------------------
+
+ERROR_STR = "ERROR00000000000"
+POLLING_INTERVAL = 0.1  # number of seconds between GPIO polls
+UPDATE_INTERVAL = 15    # number of seconds between backend updates
+NUM_MSG_PARTS = 4       # number of parts in chair-to-hub message
+
+# TODO: configure rpi for serial communication
+# See the circuitdigest article for instructions.
+ser = serial.Serial(
+    port='/dev/ttyS0',
+    baudrate=9600,
+    parity=serial.PARITY_NONE,
+    stopbits=serial.STOPBITS_ONE,
+    bytesize=serial.EIGHTBITS,
+    timeout=1
+)
 
 
 # helpers + utils -------------------------------------------------
@@ -43,10 +63,20 @@ def read_serial():
     Returns the data read from gpio pins if any (and converts it to json).
     Otherwise, returns None.
 
-    If a read error occurs (ie. due to bad setup), throws an exception.
+    If a read error occurs (ie. due to bad setup), undefined behavior.
     '''
-    # TODO: Implement me (will need to use serial and json.loads)
-    pass
+    x = ser.readline().strip()
+    print(x)
+    parts = x.split(',')
+    if len(msg_parts) != NUM_MSG_PARTS: 
+        return None
+    data = {
+        'workspace_id': parts[0],
+        'seat': parts[1],
+        'old': parts[2],
+        'new': parts[3],
+    }
+    return data
 
 
 def get_time():
@@ -82,7 +112,7 @@ def send_state(state, url):
     '''
     payload = format_state(state)
     res = requests.post(url, data=payload)
-    if res.status_code() == 400:
+    if res.status_code == 400:
         print(res)
         raise Exception("send_state failed to push to", url)
 
@@ -120,12 +150,6 @@ def update_state(state, data, my_id):
     return new_state
 
 
-# globals -------------------------------------------------
-
-ERROR_STR = "ERROR00000000000"
-POLLING_INTERVAL = 0.1  # number of seconds between GPIO polls
-UPDATE_INTERVAL = 15    # number of seconds between backend updates
-
 
 # main script loop -------------------------------------------------
 
@@ -138,7 +162,18 @@ def main():
         return
 
     # url pointing to web app backend POST endpoint
-    BACKEND = 'http://localhost:8000'  # TODO: replace with real url
+    BACKEND = 'http://freeseats-a3.herokuapp.com/api/freeseats'
+
+    # register data hub with backend
+    register_payload = {
+        '_id': WORKSPACE_ID,
+        'seats': {}
+    }
+    res = requests.post(BACKEND+'/create_hub', json=register_payload)
+    if res.status_code == 400:
+        print(res)
+        print(res.content)
+        raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
 
     # list of chair statuses
     state = {
@@ -149,13 +184,17 @@ def main():
     # time of last backend update
     last_update = get_time()
 
+    print('Setup completed, starting main loop')
     # main loop
     while True:
         # first, sleep for a little bit and check if its time to send an update
         time.sleep(POLLING_INTERVAL)
         curr_time = get_time()
         if (curr_time >= last_update + UPDATE_INTERVAL):
-            send_state(state, BACKEND)
+            # TODO: uncomment when backend url is up
+            # send_state(state, BACKEND)
+            # TODO: remove when backend url is up
+            print(state)
             last_update = curr_time
 
         data = read_serial()  # converted string to json data
