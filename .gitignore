@@ -8,3 +8,5 @@
 pyvenv.cfg
 .DS_Store
 web_app/node_modules/*
+web_app/server/node_modules/*
+web_app/client/node_modules/*

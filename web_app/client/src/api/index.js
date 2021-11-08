@@ -1,22 +1,13 @@
 import axios from 'axios'
 
 const api = axios.create({
-    baseURL: 'http://localhost:3000/api',
+    baseURL: 'https://freeseats-a3.herokuapp.com/api/freeseats',
 })
 
-// baseURL: 'mongodb+srv://nang:freeseats@freeseatscluster1.ps2zr.mongodb.net/myFirstDatabase?retryWrites=true&w=majority/api',
-export const insertMovie = payload => api.post(`/movie`, payload)
-export const getAllMovies = () => api.get(`/movies`)
-export const updateMovieById = (id, payload) => api.put(`/movie/${id}`, payload)
-export const deleteMovieById = id => api.delete(`/movie/${id}`)
-export const getMovieById = id => api.get(`/movie/${id}`)
+export const getAllFreeSeats = () => api.get(`/get_all_free_seats`)
 
 const apis = {
-    insertMovie,
-    getAllMovies,
-    updateMovieById,
-    deleteMovieById,
-    getMovieById,
+    getAllFreeSeats
 }
 
 export default apis

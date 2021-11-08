@@ -91,8 +91,8 @@ create_seats = (req, res) => {
 /*
  * update_seats updates the status of a list of seats
  * Given:
- * hub_id, array 'seat_updates' of fields: seat_id, seat_status 
- * function will update each seat_id within hub_id's status to respective seat_status
+ * hub_id, array 'seat_updates' of fields: _id, occupied 
+ * function will update each _id within hub_id's status to respective occupied value
 */
 update_seats = async (req, res) => {
     const body = req.body
@@ -106,7 +106,6 @@ update_seats = async (req, res) => {
 
     hub_id = body.hub_id
     seat_updates = body.seat_updates
-    new_status = body.seat_status
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -118,15 +117,15 @@ update_seats = async (req, res) => {
 
         for (var i = 0; i < seat_updates.length; i++) {
             upd = seat_updates[i]
-            if (!hub.seats.has(upd.seat_id)) {
+            if (!hub.seats.has(upd._id)) {
                 return (res.status(404).json({
                     err,
-                    message: 'Seat_id ' + upd.seat_id + ' not found!',
+                    message: 'Seat_id ' + upd._id + ' not found!',
                 }))
             }
-            seat = hub.seats.get(upd.seat_id)
-            seat.occupied = upd.seat_status
-            hub.seats.set(upd.seat_id, seat)
+            seat = hub.seats.get(upd._id)
+            seat.occupied = upd.occupied
+            hub.seats.set(upd._id, seat)
         }
 
         hub
@@ -147,7 +146,7 @@ update_seats = async (req, res) => {
 }
 
 /* 
- * Given a json request following the Hub schema, create_hub will add a new hub to cloud database
+ * delete_hub will delete hub based on hub_id
  */
 delete_hub = (req, res) => {
     const body = req.body
@@ -176,7 +175,7 @@ delete_hub = (req, res) => {
 }
 
 /*
- * delete_seats will add a new seats to an existing hub
+ * delete_hub will delete seats from a hub based on seat_id's
  * Given:
  * hub_id, array 'seats' of seat_id's
  * function will remove each seat to cloud database
@@ -225,10 +224,10 @@ delete_seats = (req, res) => {
 }
 
 /*
- * getFreeSeats will return an array of the freeseats given a hub_id as a request query parameter
+ * get_free_seats_by_hub will return an array of the free seats given a hub_id as a request query parameter
  *
  */
-get_free_seats = async (req, res) => {
+get_free_seats_by_hub = async (req, res) => {
     if (!req || !req.query || !req.query.hub_id) {
         return res.status(400).json({
             success: false,
@@ -255,12 +254,38 @@ get_free_seats = async (req, res) => {
     })
 }
 
+/*
+ * get_all_free_seats will return an array of the free seats given a hub_id as a request query parameter
+ *
+ */
+get_all_free_seats = async (req, res) => {
+    Hub.find({ }, (err, data) => {
+        if (err) {
+            return res.status(404).json({
+                err,
+                message: 'Error.',
+            })
+        }
+        for (var i = 0; i < data.length; i++) {
+            available_seats = new Map(
+                [...data[i].seats].filter(([_, seat]) => seat.occupied == false )
+              );
+            obj = Object.fromEntries(available_seats);
+            data[i].seats = obj
+        }
+        return res
+            .status(200)
+            .json({ success: true, data: data })
+    })
+}
+
 module.exports = {
     create_hub,
     create_seats,
     update_seats,
     delete_hub,
     delete_seats,
-    get_free_seats,
+    get_free_seats_by_hub,
+    get_all_free_seats,
 }
 
