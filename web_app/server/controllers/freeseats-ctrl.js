@@ -267,11 +267,13 @@ get_all_free_seats = async (req, res) => {
             })
         }
         for (var i = 0; i < data.length; i++) {
-            available_seats = new Map(
-                [...data[i].seats].filter(([_, seat]) => seat.occupied == false )
-              );
-            obj = Object.fromEntries(available_seats);
-            data[i].seats = obj
+            if (data[i].seats) {
+                available_seats = new Map(
+                    [...data[i].seats].filter(([_, seat]) => seat.occupied == false )
+                );
+                obj = Object.fromEntries(available_seats);
+                data[i].seats = obj
+            }
         }
         return res
             .status(200)
