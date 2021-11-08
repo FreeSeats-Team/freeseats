@@ -1,0 +1,184 @@
+{
+	"info": {
+		"_postman_id": "d1469bcb-3200-4f78-97b0-95205050ab53",
+		"name": "freeseats sample",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "create_hub_ex",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"_id\": \"test_hub4\",\n    \"seats\": {\n        \"1\": {\n            \"_id\": \"1\",\n            \"occupied\": false\n        },\n        \"2\": {\n            \"_id\": \"2\",\n            \"occupied\": true\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/freeseats/create_hub",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"freeseats",
+						"create_hub"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create_seats_ex",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hub_id\": \"test_hub4\",\n    \"seats\": [\n        {\n            \"_id\": \"3\",\n            \"occupied\": false\n        },\n        {\n            \"_id\": \"4\",\n            \"occupied\": true\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/freeseats/create_seats",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"freeseats",
+						"create_seats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "update_seat_ex",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hub_id\": \"test_hub4\",\n    \"seat_updates\": [\n        {\n            \"_id\": \"1\",\n            \"occupied\": false\n        },\n        {\n            \"_id\": \"2\",\n            \"occupied\": false\n        }\n    ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "freeseats-a3.herokuapp.com/api/freeseats/update_seats",
+					"host": [
+						"freeseats-a3",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"api",
+						"freeseats",
+						"update_seats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_free_seats_ex",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:3000/api/freeseats/get_free_seats?hub_id=test_hub4",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"freeseats",
+						"get_free_seats"
+					],
+					"query": [
+						{
+							"key": "hub_id",
+							"value": "test_hub4"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_seats_ex",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hub_id\": \"test_hub4\",\n    \"seats\": [\"3\", \"4\"]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/freeseats/delete_seats",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"freeseats",
+						"delete_seats"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete_hub_ex",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"hub_id\": \"test_hub4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:3000/api/freeseats/delete_hub",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"freeseats",
+						"delete_hub"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
