@@ -111,9 +111,10 @@ def send_state(state, url):
     The format should be in accordance with the workspace schema json.
     '''
     payload = format_state(state)
-    res = requests.post(url, data=payload)
+    res = requests.post(url, json=payload)
     if res.status_code == 400:
         print(res)
+        print(res.content)
         raise Exception("send_state failed to push to", url)
 
 
@@ -172,7 +173,7 @@ def main():
     res = requests.post(BACKEND+'/create_hub', json=register_payload)
     if res.status_code == 400:
         print(res)
-        print(res.content)
+        print(json.dumps(res.json(), indent=4))
         raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
 
     # list of chair statuses
@@ -191,9 +192,7 @@ def main():
         time.sleep(POLLING_INTERVAL)
         curr_time = get_time()
         if (curr_time >= last_update + UPDATE_INTERVAL):
-            # TODO: uncomment when backend url is up
-            # send_state(state, BACKEND)
-            # TODO: remove when backend url is up
+            send_state(state, BACKEND)
             print(state)
             last_update = curr_time
 
