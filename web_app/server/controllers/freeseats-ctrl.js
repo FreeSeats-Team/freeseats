@@ -6,7 +6,7 @@ const Hub = require('../models/freeseats-model')
  */
 create_hub = (req, res) => {
     const body = req.body
-    console.log(typeof body)
+    console.log(body)
     if (!body) {
         return res.status(400).json({
             success: false,
