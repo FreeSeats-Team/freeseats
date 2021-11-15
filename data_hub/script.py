@@ -67,8 +67,10 @@ def read_serial():
     If a read error occurs (ie. due to bad setup), undefined behavior.
     '''
     x = str(ser.readline(), 'UTF-8').strip()
-    print('Serial Read: ', x)
     parts = x.split(', ')
+    if len(parts) == 1:
+        # case of empty read
+        return None
     if len(parts) != NUM_MSG_PARTS: 
         print('Num Parts dont match: ', len(parts), 'vs', NUM_MSG_PARTS)
         return None
