@@ -6,10 +6,11 @@ import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
-import Button from '@mui/material/Button';
-import api from "../api";
+import Button from "@mui/material/Button";
 import styled from "styled-components";
-import "react-table/react-table.css";
+
+// wrapper around api that adds location suffixes randomly
+import mockSuffixes from "../utils/MockSuffixes";
 
 const Wrapper = styled.div`
   padding: 0 40px 40px 40px;
@@ -23,20 +24,22 @@ function FreeSeatsList() {
     set_is_loading(true);
 
     async function fetchData() {
-      await api.getAllFreeSeats().then((res) => {
-        set_freeseat_data(res.data);
-        set_is_loading(false);
-      });
+      const locationData = await mockSuffixes();
+      set_freeseat_data(locationData);
+      set_is_loading(false);
     }
     fetchData();
   }, []);
 
-  const createData = (space, num_seats) => (
-    {   
-        space: <Button variant="text" style={{textTransform: 'none'}}>{space}</Button>, 
-        num_seats 
-    }
-    );
+  const createData = (space, num_seats) => ({
+    id: space,
+    space: (
+      <Button variant="text" style={{ textTransform: "none" }}>
+        {space}
+      </Button>
+    ),
+    num_seats,
+  });
 
   let showTable = true;
   if (!freeseat_data) {
@@ -48,11 +51,11 @@ function FreeSeatsList() {
     console.log("Loading");
   }
 
-  console.log(freeseat_data.data);
+  console.log(freeseat_data);
 
   let rows;
-  if (freeseat_data.data) {
-    rows = freeseat_data.data.map((x) =>
+  if (freeseat_data) {
+    rows = freeseat_data.map((x) =>
       createData(x._id, Object.keys(x.seats).length)
     );
   } else {
@@ -74,7 +77,7 @@ function FreeSeatsList() {
               <TableBody>
                 {rows.map((row) => (
                   <TableRow
-                    key={row.name}
+                    key={row.id}
                     sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                   >
                     <TableCell>{row.space}</TableCell>
