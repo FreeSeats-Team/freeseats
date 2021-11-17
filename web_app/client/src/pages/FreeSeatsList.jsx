@@ -11,6 +11,8 @@ import styled from "styled-components";
 
 // wrapper around api that adds location suffixes randomly
 import mockSuffixes from "../utils/MockSuffixes";
+import getLocationsBySpace from "../utils/GetLocationsBySpace";
+import FreeSeatsModal from "../components/FreeSeatsModal";
 
 const Wrapper = styled.div`
   padding: 0 40px 40px 40px;
@@ -19,6 +21,8 @@ const Wrapper = styled.div`
 function FreeSeatsList() {
   const [is_loading, set_is_loading] = useState(false);
   const [freeseat_data, set_freeseat_data] = useState([]);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalSpace, setModalSpace] = useState("");
 
   useEffect(() => {
     set_is_loading(true);
@@ -34,7 +38,14 @@ function FreeSeatsList() {
   const createData = (space, num_seats) => ({
     id: space,
     space: (
-      <Button variant="text" style={{ textTransform: "none" }}>
+      <Button
+        variant="text"
+        style={{ textTransform: "none" }}
+        onClick={() => {
+          setModalSpace(space);
+          setModalOpen(true);
+        }}
+      >
         {space}
       </Button>
     ),
@@ -51,8 +62,6 @@ function FreeSeatsList() {
     console.log("Loading");
   }
 
-  console.log(freeseat_data);
-
   let rows;
   if (freeseat_data) {
     rows = freeseat_data.map((x) =>
@@ -62,9 +71,18 @@ function FreeSeatsList() {
     rows = [];
   }
 
+  const locationsBySpace = getLocationsBySpace(freeseat_data);
+  console.log(locationsBySpace);
+
   return (
     <div style={{ width: "100%" }}>
       <Wrapper style={{ width: "80vw", margin: "auto" }}>
+        <FreeSeatsModal
+          data={locationsBySpace}
+          spaceName={modalSpace}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
         {showTable && (
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
