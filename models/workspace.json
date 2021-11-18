@@ -4,7 +4,7 @@
   "type": "object",
 
   "properties": {
-    "workspace_id": {
+    "hub_id": {
       "description": "The unique identifier for a workspace",
       "type": "string",
       "minimum": 0
@@ -18,7 +18,7 @@
         "description": "Status of a single chair (the state, not the delta).",
         "type": "object",
         "properties": {
-          "seat": {
+          "_id": {
             "type": "string",
             "minimum": 0
           },
@@ -26,10 +26,10 @@
             "type": "boolean"
           }
         },
-        "required": ["seat", "occupied"]
+        "required": ["_id", "occupied"]
       }
     }
   },
 
-  "required": ["workspace_id", "seats"]
+  "required": ["hub_id", "seats"]
 }
