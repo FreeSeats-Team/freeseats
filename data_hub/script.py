@@ -24,7 +24,7 @@ ERROR_STR = "ERROR00000000000"
 POLLING_INTERVAL = 0.5  # number of seconds between GPIO polls
 UPDATE_INTERVAL = 15    # number of seconds between backend updates
 NUM_MSG_PARTS = 3       # number of parts in chair-to-hub message
-WORKSPACE_ID = 'lab_dev'
+WORKSPACE_ID = 'labdev_1' # lab development datahub 1
 
 ser = serial.Serial(
     port='/dev/ttyS0',
@@ -171,11 +171,11 @@ def update_state(state, data, my_id, backend):
                     }
                 ]
         }
-        res = requests.post(backend, json=payload)
-        if res.status_code == 400:
-            print(res)
-            print(res.content)
-            raise Exception("update_state failed to create new seat ", backend)
+        #res = requests.post(backend, json=payload)
+        #if res.status_code == 400:
+        #    print(res)
+        #    print(res.content)
+        #    raise Exception("update_state failed to create new seat ", backend)
     new_state['seats'][seat] = new
     print(new_state)
     return new_state
@@ -201,11 +201,11 @@ def main():
         '_id': WORKSPACE_ID,
         'seats': {}
     }
-    res = requests.post(BACKEND+'/create_hub', json=register_payload)
-    if res.status_code == 400:
-        print(res)
-        print(json.dumps(res.json(), indent=4))
-        raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
+    #res = requests.post(BACKEND+'/create_hub', json=register_payload)
+    #if res.status_code == 400:
+    #    print(res)
+    #    print(json.dumps(res.json(), indent=4))
+    #    raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
 
     # list of chair statuses
     state = {
@@ -224,7 +224,7 @@ def main():
         curr_time = get_time()
         if (curr_time >= last_update + UPDATE_INTERVAL):
             print('State: ', state)
-            send_state(state, BACKEND+'/update_seats');
+            #send_state(state, BACKEND+'/update_seats');
             last_update = curr_time
 
         data = read_serial()  # converted string to json data
