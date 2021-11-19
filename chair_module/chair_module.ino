@@ -19,15 +19,15 @@ void setup()
    long avg = 0;
    for(int i = 0; i < 20; i++) {
     long tot = cs_4_2.capacitiveSensor(30);
-    Serial.print(tot);
-    Serial.print(" ");
+//    Serial.print(tot);
+//    Serial.print(" ");
     avg += tot;
     delay(500);
    }
    baseline_avg = avg/20;
-   char buf[50];
-   sprintf(buf, "BASELINE = %lu\n", baseline_avg);
-   Serial.print(buf);
+//   char buf[50];
+//   sprintf(buf, "BASELINE = %lu\n", baseline_avg);
+//   Serial.print(buf);
    occupied = 0;
    empty = 0;
 }
@@ -38,11 +38,11 @@ void loop()
 
     //Serial.print(total1);                  // print sensor output 1
     //Serial.print("\n");
-    if (total1 > (baseline_avg * 10) && occupied != 4) {
+    if (total1 > (baseline_avg * 15) && occupied != 4) {
         occupied++;
         if (occupied == 4) {
           char buf[50];
-          sprintf(buf, "1, OCCUPIED, %lu\n", total1);
+          sprintf(buf, "2, OCCUPIED, %lu\n", total1);
           Serial.print(buf);
           empty = 0;
         }
@@ -50,7 +50,7 @@ void loop()
         empty++;
         if (empty == 4) {
           char buf[50];
-          sprintf(buf, "1, EMPTY, %lu\n", total1);
+          sprintf(buf, "2, EMPTY, %lu\n", total1);
           Serial.print(buf);
           occupied = 0;
         }
