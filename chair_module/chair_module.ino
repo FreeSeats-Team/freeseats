@@ -1,3 +1,4 @@
+#include <LowPower.h>
 #include <CapacitiveSensor.h>
 
 /*
@@ -9,8 +10,8 @@
 
 CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);        // 10 megohm resistor between pins 4 & 2, pin 2 is sensor pin, add wire, foil
 long baseline_avg = 0;
-int occupied;
-int empty;
+const int id = 1;
+bool occupy = true;
 
 void setup()                    
 {
@@ -28,34 +29,31 @@ void setup()
 //   char buf[50];
 //   sprintf(buf, "BASELINE = %lu\n", baseline_avg);
 //   Serial.print(buf);
-   occupied = 0;
-   empty = 0;
 }
 
 void loop()                    
 {
-    long total1 =  cs_4_2.capacitiveSensor(30);
-
-    //Serial.print(total1);                  // print sensor output 1
-    //Serial.print("\n");
-    if (total1 > (baseline_avg * 15) && occupied != 4) {
-        occupied++;
-        if (occupied == 4) {
-          char buf[50];
-          sprintf(buf, "2, OCCUPIED, %lu\n", total1);
-          Serial.print(buf);
-          empty = 0;
-        }
-    } else if (total1 < (baseline_avg * 10) && empty != 4) {
-        empty++;
-        if (empty == 4) {
-          char buf[50];
-          sprintf(buf, "2, EMPTY, %lu\n", total1);
-          Serial.print(buf);
-          occupied = 0;
-        }
+    int occupied = 0;
+    int empty = 0;
+    for(int i = 0; i < 8; i++) {
+      long total1 =  cs_4_2.capacitiveSensor(30);
+      if (total1 > (baseline_avg * 15)) {
+          occupied++;
+      } else {
+          empty++;
+      }
+      delay(250);
     }
-    
-
-    delay(500);                             // arbitrary delay to limit data to serial port 
+    if (occupied >= 7 && !occupy) {
+      char buf[20];
+      sprintf(buf, "%d, OCCUPIED, %d\n", id, occupied);
+      Serial.print(buf);
+      occupy = true;
+    } else if (empty >= 7 && occupy) {
+      char buf[20];
+      sprintf(buf, "%d, EMPTY, %d\n", id, empty);
+      Serial.print(buf);
+      occupy = false;
+    }
+    delay(5000);                             // delay 5 secs
 }
