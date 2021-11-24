@@ -14,6 +14,7 @@ import mockSuffixes from "../utils/MockSuffixes";
 import getLocationsBySpace from "../utils/GetLocationsBySpace";
 import FreeSeatsModal from "../components/FreeSeatsModal";
 
+
 const Wrapper = styled.div`
   padding: 0 40px 40px 40px;
 `;

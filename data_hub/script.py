@@ -24,10 +24,8 @@ ERROR_STR = "ERROR00000000000"
 POLLING_INTERVAL = 0.5  # number of seconds between GPIO polls
 UPDATE_INTERVAL = 15    # number of seconds between backend updates
 NUM_MSG_PARTS = 3       # number of parts in chair-to-hub message
-WORKSPACE_ID = 0
+WORKSPACE_ID = 'lab_dev'
 
-# TODO: configure rpi for serial communication
-# See the circuitdigest article for instructions.
 ser = serial.Serial(
     port='/dev/ttyS0',
     baudrate=9600,
@@ -67,8 +65,10 @@ def read_serial():
     If a read error occurs (ie. due to bad setup), undefined behavior.
     '''
     x = str(ser.readline(), 'UTF-8').strip()
-    print('Serial Read: ', x)
     parts = x.split(', ')
+    if len(parts) == 1:
+        # case of empty read
+        return None
     if len(parts) != NUM_MSG_PARTS: 
         print('Num Parts dont match: ', len(parts), 'vs', NUM_MSG_PARTS)
         return None
@@ -82,7 +82,7 @@ def read_serial():
         return None
     data = {
         #'workspace_id': parts[0],
-        'workspace_id': str(WORKSPACE_ID),
+        'workspace_id': WORKSPACE_ID,
         'seat': parts[0],
         'old': not status,
         'new': status,
@@ -106,12 +106,12 @@ def format_state(state):
     seats = []
     for seat in state['seats'].keys():
         formatted_seat = {
-            'seat': seat,
+            '_id': seat,
             'occupied': state['seats'][seat]
         }
         seats.append(formatted_seat)
     payload = {
-        'workspace_id': state['workspace_id'],
+        'hub_id': state['workspace_id'],
         'seats': seats
     }
     schema_checks.validate_workspace_data(payload)
@@ -124,14 +124,16 @@ def send_state(state, url):
     The format should be in accordance with the workspace schema json.
     '''
     payload = format_state(state)
+    print('Sending state:')
+    print(payload)
     res = requests.post(url, json=payload)
-    if res.status_code == 400:
+    if res.status_code == 400 or res.status_code == 404:
         print(res)
         print(res.content)
         raise Exception("send_state failed to push to", url)
 
 
-def update_state(state, data, my_id):
+def update_state(state, data, my_id, backend):
     '''
     Validates chair data and updates state to reflect that.
     Returns the updated version of the workspace state.
@@ -150,8 +152,8 @@ def update_state(state, data, my_id):
     old = data['old']
     new = data['new']
     seats = state['seats']
-    if workspace_id != str(my_id):
-        print("Mismatched workspace ids ", workspace_id, str(my_id))
+    if workspace_id != my_id:
+        print("Mismatched workspace ids ", workspace_id, my_id)
         return state
     if seat in seats and seats[seat] != old:
         print("Warning: chair id " + seat +
@@ -160,6 +162,20 @@ def update_state(state, data, my_id):
     elif seat not in seats:
         print("Note: Adding chair id " +
               seat + " to workspace state")
+        payload = {
+                'hub_id': my_id,
+                'seats': [
+                    {
+                        '_id': seat,
+                        'occupied': new
+                    }
+                ]
+        }
+        res = requests.post(backend, json=payload)
+        if res.status_code == 400:
+            print(res)
+            print(res.content)
+            raise Exception("update_state failed to create new seat ", backend)
     new_state['seats'][seat] = new
     print(new_state)
     return new_state
@@ -185,12 +201,11 @@ def main():
         '_id': WORKSPACE_ID,
         'seats': {}
     }
-    # TODO: Uncommment for full functionality
-    #res = requests.post(BACKEND+'/create_hub', json=register_payload)
-    #if res.status_code == 400:
-    #    print(res)
-    #    print(json.dumps(res.json(), indent=4))
-    #    raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
+    res = requests.post(BACKEND+'/create_hub', json=register_payload)
+    if res.status_code == 400:
+        print(res)
+        print(json.dumps(res.json(), indent=4))
+        raise Exception("Main script failed to register with backend", BACKEND+'/create_hub')
 
     # list of chair statuses
     state = {
@@ -208,14 +223,13 @@ def main():
         time.sleep(POLLING_INTERVAL)
         curr_time = get_time()
         if (curr_time >= last_update + UPDATE_INTERVAL):
-            # TODO: Uncomment for full functionality
-            #send_state(state, BACKEND)
             print('State: ', state)
+            send_state(state, BACKEND+'/update_seats');
             last_update = curr_time
 
         data = read_serial()  # converted string to json data
         if data != None:
-            update_state(state, data, WORKSPACE_ID)
+            update_state(state, data, WORKSPACE_ID, BACKEND+'/create_seats');
 
 
 # execute -------------------------------------------------

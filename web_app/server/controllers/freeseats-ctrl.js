@@ -91,7 +91,7 @@ create_seats = (req, res) => {
 /*
  * update_seats updates the status of a list of seats
  * Given:
- * hub_id, array 'seat_updates' of fields: _id, occupied 
+ * hub_id, array 'seats' of fields: _id, occupied 
  * function will update each _id within hub_id's status to respective occupied value
 */
 update_seats = async (req, res) => {
@@ -105,11 +105,11 @@ update_seats = async (req, res) => {
     }
 
     hub_id = body.hub_id
-    seat_updates = body.seat_updates
+    seat_updates = body.seats
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
-            return res.status(404).json({
+            return res.status(400).json({
                 err,
                 message: 'Hub_id ' + hub_id + ' not found!',
             })
@@ -118,7 +118,7 @@ update_seats = async (req, res) => {
         for (var i = 0; i < seat_updates.length; i++) {
             upd = seat_updates[i]
             if (!hub.seats.has(upd._id)) {
-                return (res.status(404).json({
+                return (res.status(400).json({
                     err,
                     message: 'Seat_id ' + upd._id + ' not found!',
                 }))
@@ -137,7 +137,7 @@ update_seats = async (req, res) => {
                 })
             })
             .catch(error => {
-                return res.status(404).json({
+                return res.status(400).json({
                     error,
                     message: 'Seats not updated!',
                 })
