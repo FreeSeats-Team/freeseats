@@ -22,7 +22,7 @@ create_hub = (req, res) => {
     hub
         .save()
         .then(() => {
-            return res.status(201).json({
+            return res.status(200).json({
                 success: true,
                 id: hub._id,
                 message: 'Hub created!',
@@ -191,7 +191,7 @@ delete_seats = (req, res) => {
     }
 
     hub_id = body.hub_id
-    seat_ids = body.seat_ids
+    seats = body.seats
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -201,8 +201,8 @@ delete_seats = (req, res) => {
             })
         }
 
-        for (var i = 0; i < seat_ids.length; i++) {
-            seat_id = seat_ids[i]
+        for (var i = 0; i < seats.length; i++) {
+            seat_id = seats[i]
             hub.seats.delete(seat_id)
         }
 

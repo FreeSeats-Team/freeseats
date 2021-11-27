@@ -2,13 +2,14 @@ import React from "react";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Modal from "@mui/material/Modal";
+import maps from '../utils/Maps.js'
 
 const style = {
   position: "absolute",
   top: "50%",
   left: "50%",
   transform: "translate(-50%, -50%)",
-  width: 400,
+  minWidth: 400,
   bgcolor: "background.paper",
   border: "2px solid #000",
   boxShadow: 24,
@@ -19,6 +20,9 @@ const FreeSeatsModal = (props) => {
   const { data, spaceName, open, onClose } = props;
   const dataForSpace = data.find((x) => x._id === spaceName);
   console.log(spaceName);
+  let map = maps.find((x) => x.id === spaceName);
+  if (map)
+    console.log(map.src)
   if (!dataForSpace) {
     return <div></div>;
   }
@@ -33,7 +37,7 @@ const FreeSeatsModal = (props) => {
       >
         <Box sx={style}>
           <Typography id="modal-modal-title" variant="h6" component="h2">
-            Free seats by region in {spaceName}
+            Free Seats By Region In {spaceName}
           </Typography>
           {Object.keys(seatsByRegionForSpace).map((region) => {
             return (
@@ -42,6 +46,9 @@ const FreeSeatsModal = (props) => {
               </Typography>
             );
           })}
+          {map && (
+            <img src={map.src} style={{maxWidth:'100%'}} alt="Floor Plan" />
+          )}
         </Box>
       </Modal>
     </div>

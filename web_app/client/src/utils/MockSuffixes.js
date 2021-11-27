@@ -21,8 +21,7 @@ const mockSuffixes = async () => {
             k,
             Object.fromEntries(
               Object.entries(v).map(([k1, v1]) => {
-                const newK = k1.concat("_", generateLocation());
-                return [newK, v1];
+                return [k1, v1];
               })
             ),
           ];

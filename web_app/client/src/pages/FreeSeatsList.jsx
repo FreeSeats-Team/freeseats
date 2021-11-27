@@ -10,16 +10,17 @@ import Button from "@mui/material/Button";
 import styled from "styled-components";
 
 // wrapper around api that adds location suffixes randomly
-import mockSuffixes from "../utils/MockSuffixes";
 import getLocationsBySpace from "../utils/GetLocationsBySpace";
 import FreeSeatsModal from "../components/FreeSeatsModal";
-
+import { getAllFreeSeats } from "../api";
 
 const Wrapper = styled.div`
   padding: 0 40px 40px 40px;
 `;
 
 function FreeSeatsList() {
+  console.log("Init start time");
+  const startTime = Date.now();
   const [is_loading, set_is_loading] = useState(false);
   const [freeseat_data, set_freeseat_data] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
@@ -29,12 +30,14 @@ function FreeSeatsList() {
     set_is_loading(true);
 
     async function fetchData() {
-      const locationData = await mockSuffixes();
+      const res = await getAllFreeSeats();
+      const locationData = await res.data.data;
       set_freeseat_data(locationData);
       set_is_loading(false);
     }
     fetchData();
   }, []);
+
 
   const createData = (space, num_seats) => ({
     id: space,
@@ -64,6 +67,7 @@ function FreeSeatsList() {
   }
 
   let rows;
+
   if (freeseat_data) {
     rows = freeseat_data.map((x) =>
       createData(x._id, Object.keys(x.seats).length)
@@ -74,6 +78,12 @@ function FreeSeatsList() {
 
   const locationsBySpace = getLocationsBySpace(freeseat_data);
   console.log(locationsBySpace);
+
+  if (locationsBySpace && rows && rows !== []) {
+    const msElapsed = Date.now() - startTime;
+    console.log(`Async function took ${msElapsed} ms to complete.`);
+    console.log(`Rows: ` + rows + rows !== []);
+  }
 
   return (
     <div style={{ width: "100%" }}>
