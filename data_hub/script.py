@@ -22,7 +22,7 @@ import schema_checks
 
 ERROR_STR = "ERROR00000000000"
 POLLING_INTERVAL = 0.5  # number of seconds between GPIO polls
-UPDATE_INTERVAL = 15    # number of seconds between backend updates
+UPDATE_INTERVAL = 2    # number of seconds between backend updates
 NUM_MSG_PARTS = 3       # number of parts in chair-to-hub message
 WORKSPACE_ID = 'labdev_1' # lab development datahub 1
 
@@ -65,6 +65,8 @@ def read_serial():
     If a read error occurs (ie. due to bad setup), undefined behavior.
     '''
     x = str(ser.readline(), 'UTF-8').strip()
+    if x != '':
+        print(x);
     parts = x.split(', ')
     if len(parts) == 1:
         # case of empty read
