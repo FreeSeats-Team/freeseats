@@ -24,7 +24,7 @@ ERROR_STR = "ERROR00000000000"
 POLLING_INTERVAL = 0.5  # number of seconds between GPIO polls
 UPDATE_INTERVAL = 2    # number of seconds between backend updates
 NUM_MSG_PARTS = 3       # number of parts in chair-to-hub message
-WORKSPACE_ID = 'labdev_1' # lab development datahub 1
+WORKSPACE_ID = 'labdev_2' # lab development datahub 1
 
 ser = serial.Serial(
     port='/dev/ttyS0',
