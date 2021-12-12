@@ -10,7 +10,7 @@
 
 CapacitiveSensor cs_4_2 = CapacitiveSensor(4,2);        // 10 megohm resistor between pins 4 & 2, pin 2 is sensor pin, add wire, foil
 long baseline_avg = 0;
-const int id = 2;
+const char id[8] = "Focus_1";
 bool occupy = true;
 
 void setup()                    
@@ -44,17 +44,19 @@ void loop()
       }
       delay(125);
     }
-    char buf[20];
+    char buf[30];
     if (occupied >= 7 && !occupy) {
-      sprintf(buf, "%d, OCCUPIED, %d\n", id, occupied);
+      sprintf(buf, "%s, OCCUPIED, %d\n", id, occupied);
       Serial.print(buf);
       occupy = true;
       delay(50);
     } else if (empty >= 7 && occupy) {
-      sprintf(buf, "%d, EMPTY, %d\n", id, empty);
+      sprintf(buf, "%s, EMPTY, %d\n", id, empty);
       Serial.print(buf);
       occupy = false;
       delay(50);
     }
-    LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);  
+//    LowPower.powerDown(SLEEP_4S, ADC_OFF, BOD_OFF);
+    LowPower.powerDown(SLEEP_1S, ADC_OFF, BOD_OFF);
+
 }
