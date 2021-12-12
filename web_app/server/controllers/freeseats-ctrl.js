@@ -52,8 +52,8 @@ create_seats = (req, res) => {
         })
     }
 
-    hub_id = body.hub_id
-    new_seats = body.seats
+    let hub_id = body.hub_id
+    let new_seats = body.seats
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -67,7 +67,7 @@ create_seats = (req, res) => {
             console.log(typeof new_seats[i])
             // seat = new Seat(new_seats[i])
             // For some reason this does not include the occupied field
-            seat = new_seats[i]
+            let seat = new_seats[i]
             hub.seats.set(seat._id, seat)
         }
 
@@ -104,8 +104,8 @@ update_seats = async (req, res) => {
         })
     }
 
-    hub_id = body.hub_id
-    seat_updates = body.seats
+    let hub_id = body.hub_id
+    let seat_updates = body.seats
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -123,7 +123,7 @@ update_seats = async (req, res) => {
                     message: 'Seat_id ' + upd._id + ' not found!',
                 }))
             }
-            seat = hub.seats.get(upd._id)
+            let seat = hub.seats.get(upd._id)
             seat.occupied = upd.occupied
             hub.seats.set(upd._id, seat)
         }
@@ -190,8 +190,8 @@ delete_seats = (req, res) => {
         })
     }
 
-    hub_id = body.hub_id
-    seats = body.seats
+    let hub_id = body.hub_id
+    let seats = body.seats
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -202,7 +202,7 @@ delete_seats = (req, res) => {
         }
 
         for (var i = 0; i < seats.length; i++) {
-            seat_id = seats[i]
+            let seat_id = seats[i]
             hub.seats.delete(seat_id)
         }
 
@@ -235,7 +235,7 @@ get_free_seats_by_hub = async (req, res) => {
         })
     }
 
-    hub_id = req.query.hub_id
+    let hub_id = req.query.hub_id
 
     Hub.findOne({ _id: hub_id }, (err, hub) => {
         if (err || hub == null) {
@@ -244,10 +244,10 @@ get_free_seats_by_hub = async (req, res) => {
                 message: 'Hub_id ' + hub_id + ' not found!',
             })
         }
-        available_seats = new Map(
+        let available_seats = new Map(
             [...hub.seats].filter(([_, seat]) => seat.occupied == false )
           );
-        obj = Object.fromEntries(available_seats);
+        let obj = Object.fromEntries(available_seats);
         return res
             .status(200)
             .json({ success: true, data: obj })
@@ -267,10 +267,10 @@ get_all_free_seats = async (req, res) => {
             })
         }
         for (var i = 0; i < data.length; i++) {
-            available_seats = new Map(
+            let available_seats = new Map(
                 [...data[i].seats].filter(([_, seat]) => seat.occupied == false )
               );
-            obj = Object.fromEntries(available_seats);
+            let obj = Object.fromEntries(available_seats);
             data[i].seats = obj
         }
         return res
